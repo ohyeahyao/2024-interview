@@ -1,0 +1,44 @@
+name: CI-coverage
+
+on: [push]
+
+jobs:
+ build-test:
+   runs-on: ubuntu-latest
+
+   steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+    - name: Setup PHP with PECL extension
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+
+    - name: Prepare The Environment
+      run: cp .env.example .env
+
+    - name: Install composer and dependencies
+      uses: php-actions/composer@v6
+
+    - name: Generate Application Key
+      run: php artisan key:generate
+
+    - name: PHPUnit Tests
+      uses: php-actions/phpunit@v3
+      with:
+        version: 11.0.1
+        php_extensions: xdebug
+        bootstrap: vendor/autoload.php
+        configuration: ./phpunit.xml
+        args: --coverage-text
+      env:
+        XDEBUG_MODE: coverage
+        TEST_NAME: test_name123
+    
+    - name: Run codacy-coverage-reporter
+      uses: codacy/codacy-coverage-reporter-action@v1.3.0
+      with:
+        project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        # or
+        # api-token: ${{ secrets.CODACY_API_TOKEN }}
+        coverage-reports: clover.xml
