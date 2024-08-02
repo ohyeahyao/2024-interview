@@ -1,0 +1,13 @@
+name: zoneyao-asiayo-2024-interview
+services:
+  ### PHP-FPM ##############################################
+  app:
+    build:
+      context: ../
+      dockerfile: ./docker/php/Dockerfile
+    container_name: app
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ../:/var/www
+      - ./php/php8.3.ini:/usr/local/etc/php/conf.d/php8.3.ini
