@@ -6,7 +6,7 @@ namespace Modules\Order\ConversionStrategies;
 
 use Modules\Order\CurrencyConverterStrategyInterface;
 
-final class CurrencyStrategyFactory
+class CurrencyStrategyFactory
 {
     public function create(string $currency): CurrencyConverterStrategyInterface
     {
