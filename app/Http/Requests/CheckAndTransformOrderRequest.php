@@ -14,7 +14,7 @@ class CheckAndTransformOrderRequest extends FormRequest
     {
         throw new HttpResponseException(
             response()->json([
-                'messages' => $validator->errors()->all(),
+                'messages' => $validator->errors(),
             ], 400)
         );
     }
@@ -27,8 +27,13 @@ class CheckAndTransformOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id'   => 'required|string',
-            'name' => 'required|string',
+            'id'               => 'required|string',
+            'name'             => 'required|string',
+            'address.city'     => 'required|string',
+            'address.district' => 'required|string',
+            'address.street'   => 'required|string',
+            'price'            => 'required|numeric',
+            'currency'         => 'required|string',
         ];
     }
 }
