@@ -12,7 +12,7 @@ return (new Config())
     ->setRules([
         // https://cs.symfony.com/doc/ruleSets/index.html
         '@PSR12'                 => true,
-        '@PhpCsFixer'            => true,
+        '@PhpCsFixer'            => false,
         '@PhpCsFixer:risky'      => true,
         '@PHP74Migration'        => true,
         '@PHP74Migration:risky'  => true,
