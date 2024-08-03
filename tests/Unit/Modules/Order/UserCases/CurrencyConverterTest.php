@@ -8,6 +8,7 @@ use Modules\Order\ConversionStrategies\CurrencyStrategyFactory;
 use Modules\Order\CurrencyConverterStrategyInterface;
 use Modules\Order\Exceptions\CurrencyConvertDataInvalidException;
 use Modules\Order\UseCases\CurrencyConverter;
+use Modules\Order\Validators\OrderFormatValidator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -31,7 +32,12 @@ final class CurrencyConverterTest extends TestCase
         $mockFactory = $this->createMock(CurrencyStrategyFactory::class);
         $mockFactory->expects(self::never())->method(self::anything());
 
-        $converter = new CurrencyConverter($mockFactory);   
+        $mockValidator = $this->createMock(OrderFormatValidator::class);
+        $mockValidator->expects(self::once())
+             ->method('exec')
+             ->willReturn([]);
+
+        $converter = new CurrencyConverter($mockFactory, $mockValidator);   
         self::assertSame($data, $converter->convert($data)->toArray());
     }
 
@@ -71,8 +77,13 @@ final class CurrencyConverterTest extends TestCase
         $mockFactory->expects(self::once())
              ->method('create')
              ->willReturn($mockStrategy);
+        
+        $mockValidator = $this->createMock(OrderFormatValidator::class);
+        $mockValidator->expects(self::once())
+             ->method('exec')
+             ->willReturn([]);
 
-        $converter = new CurrencyConverter($mockFactory);   
+        $converter = new CurrencyConverter($mockFactory, $mockValidator);   
         self::assertSame($expectedData, $converter->convert($data)->toArray());
     }
 
@@ -108,6 +119,20 @@ final class CurrencyConverterTest extends TestCase
                 ], 
                 ['price'],
             ],
+            '訂單金額超過 2000' => [
+                [
+                    'id'      => 'A0000001',
+                    'name'    => 'Melody Holiday Inn',
+                    'address' => [
+                        'city'     => 'taipei-city',
+                        'district' => 'da-an-district',
+                        'street'   => 'fuxing-south-road',
+                    ],
+                    'price'    => 5000.0, 
+                    'currency' => 'TWD',
+                ], 
+                ['price'],
+            ],
         ];
     }
 
@@ -115,17 +140,25 @@ final class CurrencyConverterTest extends TestCase
     public function testCurrencyConvertDataInvalidException($data, $expectedErrors): void
     {
         $this->expectException(CurrencyConvertDataInvalidException::class);
-        
+        $expectedErrors = [
+            'currency' => ['Currency format is wrong'],
+            'name'     => ['The name contains non-English characters', 'Each word in name must be capitalized'],
+        ];
+
         $mockFactory = $this->createMock(CurrencyStrategyFactory::class);
         $mockFactory->expects(self::never())->method(self::anything());
 
-        $converter = new CurrencyConverter($mockFactory);
+        $mockValidator = $this->createMock(OrderFormatValidator::class);
+        $mockValidator->expects(self::once())
+             ->method('exec')
+             ->willReturn($expectedErrors);
+
+        $converter = new CurrencyConverter($mockFactory, $mockValidator);   
+
         try {
             $converter->convert($data);
         } catch (CurrencyConvertDataInvalidException $e) {
-            foreach ($expectedErrors as $attribute) {
-                self::assertArrayHasKey($attribute, $e->getErrors());
-            }
+            self::assertSame($expectedErrors, $e->getErrors());
             throw $e;
         }
     }
