@@ -12,7 +12,6 @@ use Modules\Order\Validators\OrderFormatValidator;
 
 final class CurrencyConverter implements CurrencyConverterInterface
 {
-    public const PRICE_LIMIT = 2000;
     private CurrencyStrategyFactory $factory;
     private OrderFormatValidator $validator;
     
