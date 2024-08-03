@@ -3,6 +3,7 @@
 declare(strict_types=1);
 namespace Modules\Order\UseCases;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Modules\Order\ConversionStrategies\CurrencyStrategyFactory;
 use Modules\Order\CurrencyConverterInterface;
 use Modules\Order\Entities\Order;
@@ -13,23 +14,17 @@ use Modules\Order\Rules\ValidCurrencyRule;
 final class CurrencyConverter implements CurrencyConverterInterface
 {
     private CurrencyStrategyFactory $factory;
+    /**
+     * @var ValidationRule[]
+     */
+    private array $rules;
 
     public function __construct(CurrencyStrategyFactory $factory)
     {
         $this->factory = $factory;
-    }
-
-    private function validate(Order $order): void
-    {
-        $rule = new ValidCurrencyRule();
-        $rule->validate(
-            'currency',
-            $order->getCurrency(),
-            static function ($message): void
-            {
-                throw new CurrencyConvertDataInvalidException($message);
-            }
-        );
+        $this->rules   = [
+            'currency' => new ValidCurrencyRule(),
+        ];
     }
 
     /**
@@ -40,8 +35,11 @@ final class CurrencyConverter implements CurrencyConverterInterface
      */
     public function convert(array $data): Order
     {
-        $order = Order::fromArray($data);
-        $this->validate($order);
+        $order  = Order::fromArray($data);
+        $errors = $this->validate($order);
+        if (! empty($errors)) {
+            throw new CurrencyConvertDataInvalidException('Validated failed', $errors);
+        }
 
         if ($order->getCurrency() !== Currency::TWD->value) {
             $strategy       = $this->factory->create($order->getCurrency());
@@ -58,5 +56,36 @@ final class CurrencyConverter implements CurrencyConverterInterface
         }
 
         return $order;
+    }
+
+    private function validate(Order $order): array
+    {
+        $errors = [];
+        foreach ($this->rules as $attribute => $rule) {
+            $rule->validate(
+                $attribute,
+                $this->getOrderAttributeValue($order, $attribute),
+                static function ($message) use (&$errors, $attribute): void
+                {
+                    $errors[$attribute][] = $message;
+                }
+            );
+        }
+        
+        return $errors;
+    }
+
+    private function getOrderAttributeValue(Order $order, string $attribute): mixed
+    {
+        switch ($attribute) {
+            case 'currency':
+                return $order->getCurrency();
+            case 'price':
+                return $order->getPrice();
+            case 'name':
+                return $order->getName();
+            default:
+                throw new \InvalidArgumentException("Attribute {$attribute} not recognized");
+        }
     }
 }
