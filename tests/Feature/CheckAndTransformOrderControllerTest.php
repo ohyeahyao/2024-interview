@@ -126,19 +126,49 @@ final class CheckAndTransformOrderControllerTest extends TestCase
         $response->assertStatus(422)->assertJsonValidationErrors($expectedErrors);
     }
 
-    public function testValidData(): void
+    public static function validDataProvider(): iterable
     {
-        $payload = [
-            'id'      => 'A0000001',
-            'name'    => 'Melody Holiday Inn',
-            'address' => [
-                'city'     => 'taipei-city',
-                'district' => 'da-an-district',
-                'street'   => 'fuxing-south-road',
+        return [
+            'TWD' => [
+                [
+                    'id'      => 'A0000001',
+                    'name'    => 'Melody Holiday Inn',
+                    'address' => [
+                        'city'     => 'taipei-city',
+                        'district' => 'da-an-district',
+                        'street'   => 'fuxing-south-road',
+                    ],
+                    'price'    => 2050,
+                    'currency' => 'TWD',
+                ],
+                [
+                    'price'    => 2050,
+                    'currency' => 'TWD',
+                ],
             ],
-            'price'    => 2050,
-            'currency' => 'TWD',
+            'USD' => [
+                [
+                    'id'      => 'A0000001',
+                    'name'    => 'Melody Holiday Inn',
+                    'address' => [
+                        'city'     => 'taipei-city',
+                        'district' => 'da-an-district',
+                        'street'   => 'fuxing-south-road',
+                    ],
+                    'price'    => 1000,
+                    'currency' => 'USD',
+                ],
+                [
+                    'price'    => 31000,
+                    'currency' => 'TWD',
+                ],
+            ],
         ];
+    }
+    
+    #[DataProvider('validDataProvider')]
+    public function testValidData($payload, $expected): void
+    {
         $response = $this->json('post', route(RouteNames::ORDER_CHECK_AND_TRANSFORM), $payload);
         $response->assertStatus(200)
         ->assertJsonStructure(
@@ -153,6 +183,6 @@ final class CheckAndTransformOrderControllerTest extends TestCase
                 'price',
                 'currency',
             ]
-        );
+        )->assertJson($expected);
     }
 }
