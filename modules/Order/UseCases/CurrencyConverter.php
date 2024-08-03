@@ -6,6 +6,7 @@ namespace Modules\Order\UseCases;
 use Modules\Order\ConversionStrategies\CurrencyStrategyFactory;
 use Modules\Order\CurrencyConverterInterface;
 use Modules\Order\Entities\Order;
+use Modules\Order\Enums\Currency;
 
 final class CurrencyConverter implements CurrencyConverterInterface
 {
@@ -19,7 +20,7 @@ final class CurrencyConverter implements CurrencyConverterInterface
     public function convert(array $data): Order
     {
         $order = Order::fromArray($data);
-        if ($order->getCurrency() !== 'TWD') {
+        if ($order->getCurrency() !== Currency::TWD->value) {
             $strategy       = $this->factory->create($order->getCurrency());
             $convertedPrice = $strategy->convert($order->getPrice());
             $convertedOrder = new Order(
@@ -27,7 +28,7 @@ final class CurrencyConverter implements CurrencyConverterInterface
                 $order->getName(),
                 $order->getAddress(),
                 $convertedPrice,
-                'TWD'
+                Currency::TWD->value
             );
 
             return $convertedOrder;
