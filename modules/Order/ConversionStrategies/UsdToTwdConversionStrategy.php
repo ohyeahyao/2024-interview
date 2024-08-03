@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace Modules\Order\ConversionStrategies;
 
-use Modules\Order\CurrencyConverterStrategyInterface;
-
-final class UsdToTwdConversionStrategy implements CurrencyConverterStrategyInterface
+final class UsdToTwdConversionStrategy extends AbstractConversionStrategy
 {
-    private const EXCHANGE_RATE = 31.0;
-
-    public function convert(float $amount): float
+    protected function getExchangeRate(): float
     {
-        return round($amount * self::EXCHANGE_RATE, 2);
+        return 31.0;
     }
 }
