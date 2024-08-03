@@ -6,6 +6,7 @@ namespace Tests\Unit\UserCases;
 
 use Modules\Order\ConversionStrategies\CurrencyStrategyFactory;
 use Modules\Order\CurrencyConverterStrategyInterface;
+use Modules\Order\Exceptions\CurrencyConvertDataInvalidException;
 use Modules\Order\UseCases\CurrencyConverter;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Tests\TestCase;
@@ -72,5 +73,27 @@ final class CurrencyConverterTest extends TestCase
 
         $converter = new CurrencyConverter($mockFactory);   
         self::assertSame($expectedData, $converter->convert($data)->toArray());
+    }
+
+    public function testCurrencyConvertDataInvalidException(): void
+    {
+        $this->expectException(CurrencyConvertDataInvalidException::class);
+        $data = [
+            'id'      => 'A0000001',
+            'name'    => 'Melody Holiday Inn',
+            'address' => [
+                'city'     => 'taipei-city',
+                'district' => 'da-an-district',
+                'street'   => 'fuxing-south-road',
+            ],
+            'price'    => 1000.0, 
+            'currency' => 'JPY',
+        ];
+        
+        $mockFactory = $this->createMock(CurrencyStrategyFactory::class);
+        $mockFactory->expects(self::never())->method(self::anything());
+
+        $converter = new CurrencyConverter($mockFactory);
+        $converter->convert($data);
     }
 }

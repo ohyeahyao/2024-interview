@@ -7,6 +7,8 @@ use Modules\Order\ConversionStrategies\CurrencyStrategyFactory;
 use Modules\Order\CurrencyConverterInterface;
 use Modules\Order\Entities\Order;
 use Modules\Order\Enums\Currency;
+use Modules\Order\Exceptions\CurrencyConvertDataInvalidException;
+use Modules\Order\Rules\ValidCurrencyRule;
 
 final class CurrencyConverter implements CurrencyConverterInterface
 {
@@ -17,9 +19,30 @@ final class CurrencyConverter implements CurrencyConverterInterface
         $this->factory = $factory;
     }
 
+    private function validate(Order $order): void
+    {
+        $rule = new ValidCurrencyRule();
+        $rule->validate(
+            'currency',
+            $order->getCurrency(),
+            static function ($message): void
+            {
+                throw new CurrencyConvertDataInvalidException($message);
+            }
+        );
+    }
+
+    /**
+     * @throws CurrencyConvertDataInvalidException
+     *
+     * @param  array $data
+     * @return Order
+     */
     public function convert(array $data): Order
     {
         $order = Order::fromArray($data);
+        $this->validate($order);
+
         if ($order->getCurrency() !== Currency::TWD->value) {
             $strategy       = $this->factory->create($order->getCurrency());
             $convertedPrice = $strategy->convert($order->getPrice());

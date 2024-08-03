@@ -17,8 +17,10 @@ class ValidCurrencyRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $validCurrencies = array_column(Currency::cases(), 'value');
-
+        $validCurrencies = [
+            Currency::TWD->value,
+            Currency::USD->value,
+        ];
         if (! \in_array($value, $validCurrencies, true)) {
             $fail('Currency format is wrong');
         }
