@@ -123,7 +123,7 @@ final class CheckAndTransformOrderControllerTest extends TestCase
     public function testInvalidData($payload, $expectedErrors): void
     {
         $response = $this->json('post', route(RouteNames::ORDER_CHECK_AND_TRANSFORM), $payload);
-        $response->assertStatus(400)->assertJsonValidationErrors($expectedErrors, 'messages');
+        $response->assertStatus(422)->assertJsonValidationErrors($expectedErrors);
     }
 
     public function testValidData(): void
