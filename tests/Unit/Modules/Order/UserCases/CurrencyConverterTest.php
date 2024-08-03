@@ -94,6 +94,20 @@ final class CurrencyConverterTest extends TestCase
                 ], 
                 ['currency'],
             ],
+            '訂單金額超過 2000' => [
+                [
+                    'id'      => 'A0000001',
+                    'name'    => 'Melody Holiday Inn',
+                    'address' => [
+                        'city'     => 'taipei-city',
+                        'district' => 'da-an-district',
+                        'street'   => 'fuxing-south-road',
+                    ],
+                    'price'    => 5000.0, 
+                    'currency' => 'TWD',
+                ], 
+                ['price'],
+            ],
         ];
     }
 

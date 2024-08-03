@@ -138,11 +138,11 @@ final class CheckAndTransformOrderControllerTest extends TestCase
                         'district' => 'da-an-district',
                         'street'   => 'fuxing-south-road',
                     ],
-                    'price'    => 2050,
+                    'price'    => 2000,
                     'currency' => 'TWD',
                 ],
                 [
-                    'price'    => 2050,
+                    'price'    => 2000,
                     'currency' => 'TWD',
                 ],
             ],

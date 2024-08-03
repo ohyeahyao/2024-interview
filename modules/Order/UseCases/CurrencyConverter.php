@@ -10,9 +10,11 @@ use Modules\Order\Entities\Order;
 use Modules\Order\Enums\Currency;
 use Modules\Order\Exceptions\CurrencyConvertDataInvalidException;
 use Modules\Order\Rules\ValidCurrencyRule;
+use Modules\Shared\Rules\AmountExceedsRule;
 
 final class CurrencyConverter implements CurrencyConverterInterface
 {
+    public const PRICE_LIMIT = 2000;
     private CurrencyStrategyFactory $factory;
     /**
      * @var ValidationRule[]
@@ -24,6 +26,7 @@ final class CurrencyConverter implements CurrencyConverterInterface
         $this->factory = $factory;
         $this->rules   = [
             'currency' => new ValidCurrencyRule(),
+            'price'    => new AmountExceedsRule(self::PRICE_LIMIT),
         ];
     }
 
