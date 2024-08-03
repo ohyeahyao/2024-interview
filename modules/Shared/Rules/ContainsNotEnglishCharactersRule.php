@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Rules;
+namespace Modules\Shared\Rules;
 
+use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
 class ContainsNotEnglishCharactersRule implements ValidationRule
@@ -13,7 +14,7 @@ class ContainsNotEnglishCharactersRule implements ValidationRule
      *
      * @param \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString $fail
      */
-    public function validate(string $attribute, mixed $value, \Closure $fail): void
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (! preg_match('/^[A-Za-z ]+$/', $value)) {
             $fail(ucfirst($attribute) . ' contains non-English characters');

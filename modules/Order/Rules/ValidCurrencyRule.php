@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Rules;
+namespace Modules\Order\Rules;
 
-use App\Enums\Currency;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Modules\Order\Enums\Currency;
 
 class ValidCurrencyRule implements ValidationRule
 {

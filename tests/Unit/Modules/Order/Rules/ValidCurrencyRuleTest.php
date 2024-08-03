@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Rules;
+namespace Tests\Unit\Modules\Order\Rules;
 
-use App\Rules\ValidCurrencyRule;
+use Modules\Order\Rules\ValidCurrencyRule;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
