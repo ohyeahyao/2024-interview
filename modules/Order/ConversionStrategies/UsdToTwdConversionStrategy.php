@@ -12,6 +12,6 @@ final class UsdToTwdConversionStrategy implements CurrencyConverterStrategyInter
 
     public function convert(float $amount): float
     {
-        return $amount * self::EXCHANGE_RATE;
+        return round($amount * self::EXCHANGE_RATE, 2);
     }
 }
