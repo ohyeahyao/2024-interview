@@ -29,7 +29,7 @@ class AmountExceedsRule implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if ($value > $this->limit) {
-            $fail("Price is over {$this->limit}.");
+            $fail("Price is over {$this->limit}");
         }
     }
 }

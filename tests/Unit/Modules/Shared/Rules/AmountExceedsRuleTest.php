@@ -51,7 +51,7 @@ final class AmountExceedsRuleTest extends TestCase
 
         $fail = function ($message) use ($limit): void
         {
-            $this->assertSame("Price is over $limit.", $message);
+            $this->assertSame("Price is over $limit", $message);
         };
 
         $rule->validate('price', $value, $fail);

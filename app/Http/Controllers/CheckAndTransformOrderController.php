@@ -6,8 +6,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CheckAndTransformOrderRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Modules\Order\CurrencyConverterInterface;
-use Modules\Order\Entities\Order;
+use Modules\Order\Exceptions\CurrencyConvertDataInvalidException;
 
 class CheckAndTransformOrderController extends Controller
 {
@@ -20,11 +21,15 @@ class CheckAndTransformOrderController extends Controller
 
     public function main(CheckAndTransformOrderRequest $request): JsonResponse
     {
-        /**
-         * @var Order $order
-         */
-        $order = $this->currency_converter->convert($request->all());
-        
-        return response()->json($order->toArray());
+        try {
+            $order = $this->currency_converter->convert($request->toArray());
+
+            return response()->json($order->toArray());
+        } catch (CurrencyConvertDataInvalidException $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'errors'  => $e->getErrors(),
+            ], Response::HTTP_BAD_REQUEST);
+        }
     }
 }

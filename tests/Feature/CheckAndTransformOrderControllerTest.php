@@ -8,6 +8,105 @@ use Tests\TestCase;
 
 final class CheckAndTransformOrderControllerTest extends TestCase
 {
+    public static function invalidOrderDataAnd400ErrorProvider(): iterable
+    {
+        return [
+            'name 包含非英文字母' => [
+                [
+                    'id'      => 'A0000001',
+                    'name'    => '嗨! John',
+                    'address' => [
+                        'city'     => 'taipei-city',
+                        'district' => 'da-an-district',
+                        'street'   => 'fuxing-south-road',
+                    ],
+                    'price'    => 1050,
+                    'currency' => 'TWD',
+                ],
+                [
+                    'name' => ['Name contains non-English characters'],
+                ],
+            ],
+            'name 每個單字首字母非大寫' => [
+                [
+                    'id'      => 'A0000001',
+                    'name'    => 'John x',
+                    'address' => [
+                        'city'     => 'taipei-city',
+                        'district' => 'da-an-district',
+                        'street'   => 'fuxing-south-road',
+                    ],
+                    'price'    => 1050,
+                    'currency' => 'TWD',
+                ],
+                [
+                    'name' => ['Name is not capitalized'],
+                ],
+            ],
+            'name 每個單字首字母非大寫 + 包含非英文字母' => [
+                [
+                    'id'      => 'A0000001',
+                    'name'    => 'John x 嗨!',
+                    'address' => [
+                        'city'     => 'taipei-city',
+                        'district' => 'da-an-district',
+                        'street'   => 'fuxing-south-road',
+                    ],
+                    'price'    => 1050,
+                    'currency' => 'TWD',
+                ],
+                [
+                    'name' => ['Name contains non-English characters', 'Name is not capitalized'],
+                ],
+            ],
+            'price 訂單金額超過 2000' => [
+                [
+                    'id'      => 'A0000001',
+                    'name'    => 'John Yao',
+                    'address' => [
+                        'city'     => 'taipei-city',
+                        'district' => 'da-an-district',
+                        'street'   => 'fuxing-south-road',
+                    ],
+                    'price'    => 2050,
+                    'currency' => 'TWD',
+                ],
+                [
+                    'price' => ['Price is over 2000'],
+                ],
+            ],
+            'currency 貨幣格式若非 TWD 或 USD' => [
+                [
+                    'id'      => 'A0000001',
+                    'name'    => 'John Yao',
+                    'address' => [
+                        'city'     => 'taipei-city',
+                        'district' => 'da-an-district',
+                        'street'   => 'fuxing-south-road',
+                    ],
+                    'price'    => 1050,
+                    'currency' => 'JPY',
+                ],
+                [
+                    'currency' => ['Currency format is wrong'],
+                ],
+            ],
+        ];
+    }
+
+    #[DataProvider('invalidOrderDataAnd400ErrorProvider')]
+    public function testInvalidOrderDataAnd400Error($payload, $expectedErrors): void
+    {
+        $response = $this->json('post', route(RouteNames::ORDER_CHECK_AND_TRANSFORM), $payload);
+        $response->assertStatus(400)
+        ->assertJsonStructure(['message', 'errors'])
+        ->assertJson([
+            'message' => 'Validated failed',
+            'errors'  => $expectedErrors,
+        ]);
+        ;
+    }
+
     public static function invalidDataProvider(): iterable
     {
         return [
@@ -146,7 +245,7 @@ final class CheckAndTransformOrderControllerTest extends TestCase
                     'currency' => 'TWD',
                 ],
             ],
-            'USD' => [
+            'USD 當貨幣為 USD 時，需修改 price 金額乘上固定匯率 31 元，並且將 currency 改為 TWD' => [
                 [
                     'id'      => 'A0000001',
                     'name'    => 'Melody Holiday Inn',
