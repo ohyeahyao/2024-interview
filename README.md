@@ -1,14 +1,49 @@
 
-[![Code Coverage](https://raw.githubusercontent.com/ohyeahyao/phpunit-coverage-test/image-data/coverage.svg
-)](https://raw.githubusercontent.com/ohyeahyao/phpunit-coverage-test/image-data/coverage.svg
+![Code Coverage](https://raw.githubusercontent.com/ohyeahyao/phpunit-coverage-test/image-data/coverage.svg
 )
 
 
-# Architecture Design
+## Database Quiz 1
+### 請寫出一條查詢語句 (SQL)，列出在 2023 年 5 月下訂的訂單，使用台幣付款且5月總金額最多的前 10 筆的旅宿 ID (bnb_id), 旅宿名稱 (bnb_name), 5 月總金額 (may_amount)
 
-## Onion Architecture
+#### Answer:
+```SQL
+SELECT 
+    bnbs.id AS bnb_id,
+    bnbs.name AS bnb_name,
+    SUM(orders.amount) AS may_amount
+FROM 
+    orders
+JOIN 
+    bnbs ON orders.bnb_id = bnbs.id
+WHERE 
+    orders.currency = 'TWD'
+    AND orders.created_at >= '2023-05-01'
+    AND orders.created_at < '2023-06-01'
+GROUP BY bnbs.id, bnbs.name
+ORDER BY may_amount DESC
+LIMIT 10;
+```
 
-![alt text](./.assets/img-onion-architecture.png)
+## Database Quiz 2
+### 在題目一的執行下，我們發現 SQL 執行速度很慢，您會怎麼去優化？請闡述您怎麼判斷與優化的方式?
+
+#### Answer:
+
+針對**資料庫查詢**我會有幾個不同的角度進行優化的判斷: 
+1. **SQL 本身分析**：EXPLAIN 該 SQL 掃描的行數與使用的索引，加入需要的索引，減少查詢的行數進而加快查詢速度。
+2. **提高 RAM 的使用率和查詢效率**：檢查 DB 的 buffer_size 等設定。
+3. **緩存機制**。若此資料是歷史且不會異動，則會開啟 DB 的快取功能，若該 DB 不支援則會將查詢的結果在 Application 層時針對查詢結果緩存，降低 DB 查詢壓力並加速查詢速度。
+4. **分區表**：若 order 資料量過大，在可以不影響業務下，會考慮針對訂單日期規劃分區表，使用 PROCEDURE 和 EVENT 動態管理分區。
+5. **優化硬體**：利用 Grafana 搭配 Prometheus 呈現監控可視化，判斷是否觀察是否達到硬體限制，可觀察 CPU, RAM usage 和 Disk I/O，來決定是否要將 Disk 升級 SSD 或是增加運算資源。
+
+--
+# API Implements Quiz
+## Architecture Design
+
+### Onion Architecture
+
+![Onion Architecture](https://raw.githubusercontent.com/ohyeahyao/phpunit-coverage-test/image-data/img-onion-architecture.png)
 
 為了讓核心的 Domain Model 的 Business Logic 受到完整的保護。
 優點：
@@ -17,8 +52,9 @@
 3. 內層核心不會呼叫外層的元件，而是由外層反轉注入內層核心
 
 
-## OOP & Design Pattern
-### `App\Http\Controllers\CheckAndTransformOrderController`
+### OOP & Design Pattern
+#### - CheckAndTransformOrderController
+`App\Http\Controllers\CheckAndTransformOrderController`
 - SRP: 處理訂單檢查和轉換的 HTTP 請求。不涉及其他責任（如：具體的貨幣轉換邏輯、訂單驗證邏輯）。
 
 - OCP: 對擴展開放、修改封閉。可以通過注入不同的 CurrencyConverterInterface 實現來擴展貨幣轉換功能，而不需要修改 Controller 代碼。
@@ -32,7 +68,8 @@
 - Dependency Injection: CurrencyConverterInterface 通過 construct 注入到 CheckAndTransformOrderController，可以動態地使用 OrderServiceProvider 調整貨幣轉換的策略與驗證規則。
 
 
-### `Modules\Order\UseCases\CurrencyConverter`
+#### - CurrencyConverter
+`Modules\Order\UseCases\CurrencyConverter`
 
 - SRP: CurrencyConverter 的單一職責是處理貨幣轉換。它的所有方法和屬性都支持這一職責，而不涉及其他責任（如：驗證訂單邏輯、貨幣轉換策略產生）。
 
@@ -45,17 +82,19 @@ Example：使用 CurrencyStrategyFactory 來建立不同的策略，可以通過
 
 - DIP: CurrencyConverter 依賴於 Interface(CurrencyStrategyFactoryInterface, OrderFormatValidatorInterface)，而不是具體的實現。
 
-### `Modules\Order\ConversionStrategies\CurrencyStrategyFactory`
+#### - CurrencyStrategyFactory
+`Modules\Order\ConversionStrategies\CurrencyStrategyFactory`
 - 實作**抽象工廠模式**，負責產生貨幣轉換的物件，當加入新的貨幣轉換功能只需要修改此工廠即可。
 
-### `Modules\Order\Validators\OrderFormatValidator`
+#### - OrderFormatValidator
+`Modules\Order\Validators\OrderFormatValidator`
 - 實作**策略模式**，透過 $validationRules 動態調整 Validation Rules，每個 Rule 實現了 ValidationRule Interface。
 
 
 
-# 備註
+# Notes
 
-## 資料夾目錄
+## Directories
 
 ```
 .
@@ -122,7 +161,11 @@ Code Coverage Report，通常由 phpunit 工具生成
 
 - **Unit**：單元測試
 
-# 參考資料
+## Continuous Integration (Github Action)
+本專案實作了持續集成（CI）以確保代碼質量，並自動生成代碼覆蓋率報告。使用 [GitHub Actions](https://github.com/features/actions) 進行 CI，並使用 [Codacy](https://www.codacy.com/) 進行代碼覆蓋率報告。
+
+
+# References
 
 - http://epic.tesio.it/doc/manual/the_bellis_perennis.html
 - https://www.kenming.idv.tw/microservices-internal-structure_onion-architecture/
