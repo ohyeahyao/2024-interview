@@ -2,6 +2,26 @@
 ![Code Coverage](https://raw.githubusercontent.com/ohyeahyao/phpunit-coverage-test/image-data/coverage.svg
 )
 
+Table of Contents
+=================
+
+## Database Quiz
+- [Database Quiz 1](#database-quiz-1)
+- [Database Quiz 2](#database-quiz-2)
+
+## API Implements Quiz
+- [Architecture Design](#architecture-design)
+  * [Onion Architecture](#onion-architecture)
+  * [OOP & Design Pattern](#oop--design-pattern)
+    + [CheckAndTransformOrderController](#checkandtransformordercontroller)
+    + [CurrencyConverter](#currencyconverter)
+    + [CurrencyStrategyFactory](#currencystrategyfactory)
+    + [OrderFormatValidator](#orderformatvalidator)
+- [Notes](#notes)
+  * [Directories](#directories)
+  * [Continuous Integration (GitHub Action)](#continuous-integration-github-action)
+- [References](#references)
+
 
 ## Database Quiz 1
 ### 請寫出一條查詢語句 (SQL)，列出在 2023 年 5 月下訂的訂單，使用台幣付款且5月總金額最多的前 10 筆的旅宿 ID (bnb_id), 旅宿名稱 (bnb_name), 5 月總金額 (may_amount)
