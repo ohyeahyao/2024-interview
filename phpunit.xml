@@ -8,6 +8,7 @@
         <report>
             <clover outputFile="clover.xml" />
             <html outputDirectory="html-coverage" lowUpperBound="50" highLowerBound="90"/>
+            <text outputFile="coverage.txt"/>
         </report>
     </coverage>
 

@@ -59,11 +59,11 @@ LIMIT 10;
 
 --
 # API Implements Quiz
-## Architecture Design
 
+## Architecture Design
 ### Onion Architecture
 
-![Onion Architecture](https://raw.githubusercontent.com/ohyeahyao/phpunit-coverage-test/image-data/img-onion-architecture.png)
+![Onion Architecture](https://github.com/ohyeahyao/asiayo-2024-interview/blob/main/docs/img-onion-architecture.png)
 
 為了讓核心的 Domain Model 的 Business Logic 受到完整的保護。
 優點：
@@ -153,7 +153,11 @@ Example：使用 CurrencyStrategyFactory 來建立不同的策略，可以通過
 ```
 $ ./vendor/bin/phpunit
 ```
-Code Coverage Report，通常由 phpunit 工具生成
+Code Coverage Report，通常由 phpunit 工具生成 `./html-coverage`
+
+![Code Coverage](https://github.com/ohyeahyao/asiayo-2024-interview/blob/main/docs/img-code-coverage.png)
+![Code Coverage](https://github.com/ohyeahyao/asiayo-2024-interview/blob/main/docs/img-code-coverage-text.png)
+
 
 ### modules
 
