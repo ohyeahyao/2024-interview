@@ -3,21 +3,21 @@
 declare(strict_types=1);
 namespace Modules\Order\UseCases;
 
-use Modules\Order\ConversionStrategies\CurrencyStrategyFactory;
 use Modules\Order\CurrencyConverterInterface;
+use Modules\Order\CurrencyStrategyFactoryInterface;
 use Modules\Order\Entities\Order;
 use Modules\Order\Enums\Currency;
 use Modules\Order\Exceptions\CurrencyConvertDataInvalidException;
-use Modules\Order\Validators\OrderFormatValidator;
+use Modules\Order\OrderFormatValidatorInterface;
 
 final class CurrencyConverter implements CurrencyConverterInterface
 {
-    private CurrencyStrategyFactory $factory;
-    private OrderFormatValidator $validator;
+    private CurrencyStrategyFactoryInterface $factory;
+    private OrderFormatValidatorInterface $validator;
     
     public function __construct(
-        CurrencyStrategyFactory $factory,
-        OrderFormatValidator $validator
+        CurrencyStrategyFactoryInterface $factory,
+        OrderFormatValidatorInterface $validator
     ) {
         $this->factory   = $factory;
         $this->validator = $validator;

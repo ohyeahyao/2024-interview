@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\UserCases;
 
-use Modules\Order\ConversionStrategies\CurrencyStrategyFactory;
 use Modules\Order\CurrencyConverterStrategyInterface;
+use Modules\Order\CurrencyStrategyFactoryInterface;
 use Modules\Order\Exceptions\CurrencyConvertDataInvalidException;
+use Modules\Order\OrderFormatValidatorInterface;
 use Modules\Order\UseCases\CurrencyConverter;
-use Modules\Order\Validators\OrderFormatValidator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -29,10 +29,10 @@ final class CurrencyConverterTest extends TestCase
             'price'    => 1050.0,
             'currency' => 'TWD',
         ];
-        $mockFactory = $this->createMock(CurrencyStrategyFactory::class);
+        $mockFactory = $this->createMock(CurrencyStrategyFactoryInterface::class);
         $mockFactory->expects(self::never())->method(self::anything());
 
-        $mockValidator = $this->createMock(OrderFormatValidator::class);
+        $mockValidator = $this->createMock(OrderFormatValidatorInterface::class);
         $mockValidator->expects(self::once())
              ->method('exec')
              ->willReturn([]);
@@ -73,12 +73,12 @@ final class CurrencyConverterTest extends TestCase
             ->with(1000.0)
             ->willReturn(31000.0);
 
-        $mockFactory = $this->createMock(CurrencyStrategyFactory::class);
+        $mockFactory = $this->createMock(CurrencyStrategyFactoryInterface::class);
         $mockFactory->expects(self::once())
              ->method('create')
              ->willReturn($mockStrategy);
         
-        $mockValidator = $this->createMock(OrderFormatValidator::class);
+        $mockValidator = $this->createMock(OrderFormatValidatorInterface::class);
         $mockValidator->expects(self::once())
              ->method('exec')
              ->willReturn([]);
@@ -145,10 +145,10 @@ final class CurrencyConverterTest extends TestCase
             'name'     => ['The name contains non-English characters', 'Each word in name must be capitalized'],
         ];
 
-        $mockFactory = $this->createMock(CurrencyStrategyFactory::class);
+        $mockFactory = $this->createMock(CurrencyStrategyFactoryInterface::class);
         $mockFactory->expects(self::never())->method(self::anything());
 
-        $mockValidator = $this->createMock(OrderFormatValidator::class);
+        $mockValidator = $this->createMock(OrderFormatValidatorInterface::class);
         $mockValidator->expects(self::once())
              ->method('exec')
              ->willReturn($expectedErrors);

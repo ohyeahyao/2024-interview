@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Modules\Order\ConversionStrategies;
 
 use Modules\Order\CurrencyConverterStrategyInterface;
+use Modules\Order\CurrencyStrategyFactoryInterface;
 use Modules\Order\Enums\Currency;
 
-class CurrencyStrategyFactory
+final class CurrencyStrategyFactory implements CurrencyStrategyFactoryInterface
 {
     public function create(string $currency): CurrencyConverterStrategyInterface
     {

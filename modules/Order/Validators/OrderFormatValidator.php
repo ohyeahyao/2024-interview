@@ -6,8 +6,9 @@ namespace Modules\Order\Validators;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Modules\Order\Entities\Order;
+use Modules\Order\OrderFormatValidatorInterface;
 
-class OrderFormatValidator
+class OrderFormatValidator implements OrderFormatValidatorInterface
 {
     public const PRICE_LIMIT = 2000;
     /**
