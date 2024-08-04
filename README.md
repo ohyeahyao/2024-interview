@@ -1,4 +1,7 @@
 
+[![Code Coverage](https://raw.githubusercontent.com/ohyeahyao/phpunit-coverage-test/image-data/coverage.svg
+)](https://raw.githubusercontent.com/ohyeahyao/phpunit-coverage-test/image-data/coverage.svg
+)
 
 
 # Architecture Design
