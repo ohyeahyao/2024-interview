@@ -183,7 +183,11 @@ Code Coverage Report，通常由 phpunit 工具生成 `./html-coverage`
     - 貨幣格式若非 TWD 或 USD，丟出 400 - Currency format is wrong
     - 當貨幣為 USD 時，需修改 price 金額乘上固定匯率 31 元，並且將 currency 改為 TWD
 
+![Feature Test Cases](https://github.com/ohyeahyao/asiayo-2024-interview/blob/main/docs/img-test-cases.png)
+
 - **Unit**：單元測試
+![Unit Test Cases](https://github.com/ohyeahyao/asiayo-2024-interview/blob/main/docs/img-unit-test-cases.png)
+....
 
 ## Continuous Integration (Github Action)
 本專案實作了持續集成（CI）以確保代碼質量，並自動生成代碼覆蓋率報告。使用 [GitHub Actions](https://github.com/features/actions) 進行 CI，並使用 [Codacy](https://www.codacy.com/) 進行代碼覆蓋率報告。
