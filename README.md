@@ -5,11 +5,7 @@
 Table of Contents
 =================
 
-## Database Quiz
-- [Database Quiz 1](#database-quiz-1)
-- [Database Quiz 2](#database-quiz-2)
-
-## API Implements Quiz
+## API Implements
 - [Architecture Design](#architecture-design)
   * [Onion Architecture](#onion-architecture)
   * [OOP & Design Pattern](#oop--design-pattern)
@@ -22,43 +18,7 @@ Table of Contents
   * [Continuous Integration (GitHub Action)](#continuous-integration-github-action)
 - [References](#references)
 
-
-## Database Quiz 1
-### 請寫出一條查詢語句 (SQL)，列出在 2023 年 5 月下訂的訂單，使用台幣付款且5月總金額最多的前 10 筆的旅宿 ID (bnb_id), 旅宿名稱 (bnb_name), 5 月總金額 (may_amount)
-
-#### Answer:
-```SQL
-SELECT 
-    bnbs.id AS bnb_id,
-    bnbs.name AS bnb_name,
-    SUM(orders.amount) AS may_amount
-FROM 
-    orders
-JOIN 
-    bnbs ON orders.bnb_id = bnbs.id
-WHERE 
-    orders.currency = 'TWD'
-    AND orders.created_at >= '2023-05-01'
-    AND orders.created_at < '2023-06-01'
-GROUP BY bnbs.id, bnbs.name
-ORDER BY may_amount DESC
-LIMIT 10;
-```
-
-## Database Quiz 2
-### 在題目一的執行下，我們發現 SQL 執行速度很慢，您會怎麼去優化？請闡述您怎麼判斷與優化的方式?
-
-#### Answer:
-
-針對**資料庫查詢**我會有幾個不同的角度進行優化的判斷: 
-1. **SQL 本身分析**：EXPLAIN 該 SQL 掃描的行數與使用的索引，加入需要的索引，減少查詢的行數進而加快查詢速度。
-2. **提高 RAM 的使用率和查詢效率**：檢查 DB 的 buffer_size 等設定。
-3. **緩存機制**。若此資料是歷史且不會異動，則會開啟 DB 的快取功能，若該 DB 不支援則會將查詢的結果在 Application 層時針對查詢結果緩存，降低 DB 查詢壓力並加速查詢速度。
-4. **分區表**：若 order 資料量過大，在可以不影響業務下，會考慮針對訂單日期規劃分區表，使用 PROCEDURE 和 EVENT 動態管理分區。
-5. **優化硬體**：利用 Grafana 搭配 Prometheus 呈現監控可視化，判斷是否觀察是否達到硬體限制，可觀察 CPU, RAM usage 和 Disk I/O，來決定是否要將 Disk 升級 SSD 或是增加運算資源。
-
---
-# API Implements Quiz
+# API Implements
 
 ## Architecture Design
 ### Onion Architecture
